@@ -44,13 +44,12 @@
 (defun c-255! (r g b &optional (a 255))
   (c! (/ r 255.0) (/ g 255.0) (/ b 255.0) (/ a 255.0)))
 
-(defconstant +rainbow+
-  (vector (c-255! 255 0 0) (c-255! 255 127 0) (c-255! 255 255 0) (c-255! 0 255 0)
-          (c-255! 0 0 255) (c-255! 75 0 130) (c-255! 148 0 211)))
+;; (defconstant +rainbow+
+;;   (vector (c-255! 255 0 0) (c-255! 255 127 0) (c-255! 255 255 0) (c-255! 0 255 0)
+;;           (c-255! 0 0 255) (c-255! 75 0 130) (c-255! 148 0 211)))
 
-(defun c-rainbow (f)
-  (let ((rainbow-value (* f 6.0)))
-    (multiple-value-bind (i frac)
-        (floor rainbow-value)
-      (c-lerp frac (aref +rainbow+ i) (aref +rainbow+ (min (1+ i) 6))))))
-
+;; (defun c-rainbow (f)
+;;   (let ((rainbow-value (* f 6.0)))
+;;     (multiple-value-bind (i frac)
+;;         (floor rainbow-value)
+;;       (c-lerp frac (aref +rainbow+ i) (aref +rainbow+ (min (1+ i) 6))))))
