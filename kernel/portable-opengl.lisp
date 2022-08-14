@@ -1,39 +1,5 @@
 (in-package #:kons-9)
 
-;;;; C interface ========================================================
-
-(defmacro with-c-array-1 (vec &body forms)
-  `(multiple-value-bind (v vp)
-       (make-heap-ivector 1 'single-float)
-       (setf (aref v 0) (aref ,vec 0))
-     (unwind-protect
-          (progn ,@forms)
-       (dispose-heap-ivector v)
-       (dispose-heap-ivector vp))))
-
-(defmacro with-c-array-3 (vec &body forms)
-  `(multiple-value-bind (v vp)
-       (make-heap-ivector 3 'single-float)
-       (setf (aref v 0) (aref ,vec 0))
-       (setf (aref v 1) (aref ,vec 1))
-       (setf (aref v 2) (aref ,vec 2))
-     (unwind-protect
-          (progn ,@forms)
-       (dispose-heap-ivector v)
-       (dispose-heap-ivector vp))))
-
-(defmacro with-c-array-4 (vec &body forms)
-  `(multiple-value-bind (v vp)
-       (make-heap-ivector 4 'single-float)
-       (setf (aref v 0) (aref ,vec 0))
-       (setf (aref v 1) (aref ,vec 1))
-       (setf (aref v 2) (aref ,vec 2))
-       (setf (aref v 3) (aref ,vec 3))
-     (unwind-protect
-          (progn ,@forms)
-       (dispose-heap-ivector v)
-       (dispose-heap-ivector vp))))
-
 ;;;; macros ==============================================================
 
 (defmacro with-gl-enable (flag &body body)
@@ -126,43 +92,52 @@
 (defun gl-enable-light (light-id dir &optional (color *light-color*))
   (gl:enable light-id)
 
-  (with-c-array-4 (vector (x dir) (y dir) (z dir) 0.0)
-    (gl:light light-id :position vp))
+  ;; (with-c-array-4 (vector (x dir) (y dir) (z dir) 0.0)
+  ;;   (gl:light light-id :position vp))
+  (gl:light light-id :position (vector (x dir) (y dir) (z dir) 0.0))
 
-  (with-c-array-4 (vector 0.25 0.25 0.25 1.0)
-    (gl:light light-id :ambient vp))
-  (with-c-array-4 (vector (c-red color) (c-green color) (c-blue color) 1.0)
-    (gl:light light-id :diffuse vp))
-  (with-c-array-4 (vector (c-red color) (c-green color) (c-blue color) 1.0)
-    (gl:light light-id :specular vp))
+  ;; (with-c-array-4 (vector 0.25 0.25 0.25 1.0)
+  ;;   (gl:light light-id :ambient vp))
+  (gl:light light-id :ambient (vector 0.25 0.25 0.25 1.0))
+
+  ;; (with-c-array-4 (vector (c-red color) (c-green color) (c-blue color) 1.0)
+  ;;   (gl:light light-id :diffuse vp))
+  (gl:light light-id :diffuse (vector (c-red color) (c-green color) (c-blue color) 1.0))
+
+  ;; (with-c-array-4 (vector (c-red color) (c-green color) (c-blue color) 1.0)
+  ;;   (gl:light light-id :specular vp))
+  (gl:light light-id :specular (vector (c-red color) (c-green color) (c-blue color) 1.0))
   )
 
 (defun gl-disable-light (light-id)
   (gl:disable light-id))
 
 (defun gl-set-material (&optional (diff *shading-color*) (spec (c! 0 0 0)) (shine 0.0))
-  (with-c-array-4 (vector (c-red diff) (c-green diff) (c-blue diff) 1.0)
-    (gl:material :front-and-back :diffuse vp))
-  (with-c-array-4 (vector (c-red spec) (c-green spec) (c-blue spec) 1.0)
-    (gl:material :front-and-back :specular vp))
-  (with-c-array-1 (vector shine)
-    (gl:material :front-and-back :shininess vp)))
+  ;; (with-c-array-4 (vector (c-red diff) (c-green diff) (c-blue diff) 1.0)
+  ;;   (gl:material :front-and-back :diffuse vp))
+  (gl:material :front-and-back :diffuse (vector (c-red diff) (c-green diff) (c-blue diff) 1.0))
+  ;; (with-c-array-4 (vector (c-red spec) (c-green spec) (c-blue spec) 1.0)
+  ;;   (gl:material :front-and-back :specular vp))
+  (gl:material :front-and-back :specular (vector (c-red spec) (c-green spec) (c-blue spec) 1.0))
+  ;; (with-c-array-1 (vector shine)
+  ;;   (gl:material :front-and-back :shininess vp))
+  (gl:material :front-and-back :shininess (vector shine)))
   
-(defun new-pixel-format (&rest attributes)
-  ;; take a list of opengl pixel format attributes (enums and other
-  ;; small ints), make an array (character array?), and create and
-  ;; return an NSOpenGLPixelFormat
-  (let* ((attribute-size (ccl::foreign-size #>NSOpenGLPixelFormatAttribute :bytes))
-         (nattributes (length attributes)))
-    (ccl::%stack-block ((objc-attributes (* attribute-size (1+ nattributes))))
-      (loop for i from 0 to nattributes
-            for attribute in attributes do
-            (setf (ccl:paref objc-attributes (:* #>NSOpenGLPixelFormatAttribute) i) 
-                  attribute) ; <- autocoerced?
-            finally (setf 
-                     (ccl:paref objc-attributes 
-                                (:* #>NSOpenGLPixelFormatAttribute) nattributes) 0))
-      (make-instance ns:ns-opengl-pixel-format :with-attributes objc-attributes))))
+;; (defun new-pixel-format (&rest attributes)
+;;   ;; take a list of opengl pixel format attributes (enums and other
+;;   ;; small ints), make an array (character array?), and create and
+;;   ;; return an NSOpenGLPixelFormat
+;;   (let* ((attribute-size (ccl::foreign-size #>NSOpenGLPixelFormatAttribute :bytes))
+;;          (nattributes (length attributes)))
+;;     (ccl::%stack-block ((objc-attributes (* attribute-size (1+ nattributes))))
+;;       (loop for i from 0 to nattributes
+;;             for attribute in attributes do
+;;             (setf (ccl:paref objc-attributes (:* #>NSOpenGLPixelFormatAttribute) i)
+;;                   attribute) ; <- autocoerced?
+;;             finally (setf
+;;                      (ccl:paref objc-attributes
+;;                                 (:* #>NSOpenGLPixelFormatAttribute) nattributes) 0))
+;;       (make-instance ns:ns-opengl-pixel-format :with-attributes objc-attributes))))
 
 (defun 3d-update-light-settings ()
   (if *do-backface-cull?*
@@ -196,7 +171,7 @@
 
 (defun 3d-setup-buffer ()
   (gl:clear-color (c-red *bg-color*) (c-green *bg-color*) (c-blue *bg-color*) 0.0)
-  (gl:clear (logior :color-buffer-bit :depth-buffer-bit))
+  (gl:clear :color-buffer-bit :depth-buffer-bit)
   (gl:enable :depth-test)
   (gl:cull-face :back))
 
