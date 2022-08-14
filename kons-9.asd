@@ -4,8 +4,11 @@
   :description "Common Lisp 3D Graphics System"
   :author "Kaveh Kardan"
   :license "MIT"
+  :depends-on
+  (#:cffi
+   #:cl-opengl)
   :components
-  ((:file "ccl64")
+  ;; ((:file "ccl64")
    (:file "package")
    (:file "kernel/utils")
    (:file "kernel/color")
