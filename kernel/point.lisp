@@ -4,10 +4,13 @@
 
 ;;; class for representing 3D points
 ;;; change to more efficient representation later
+(eval-when (:compile-toplevel :load-toplevel :execute)
+
 (defclass point ()
   ((x :accessor x :initarg :x :initform 0.0)
    (y :accessor y :initarg :y :initform 0.0)
    (z :accessor z :initarg :z :initform 0.0)))
+)
 
 (defmethod (setf x) (val (self point))
   (setf (slot-value self 'x) (coerce val 'single-float)))
@@ -22,10 +25,12 @@
   (print-unreadable-object (self stream :type t)
     (format stream "[~a, ~a, ~a]" (x self) (y self) (z self))))
 
+(eval-when (:compile-toplevel :load-toplevel :execute)
 (defun p! (x y z)
   (make-instance 'point :x (coerce x 'single-float)
 			:y (coerce y 'single-float)
 			:z (coerce z 'single-float)))
+)
 
 (defun point->list (p)
   (list (x p) (y p) (z p)))

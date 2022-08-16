@@ -3,11 +3,13 @@
 ;;;; color ==============================================================
 
 ;;; we define colors as simple vectors
+(eval-when (:compile-toplevel :load-toplevel :execute)
 (defun c! (r g b &optional (a 1.0))
   (vector (coerce r 'single-float)
 	  (coerce g 'single-float)
 	  (coerce b 'single-float)
 	  (coerce a 'single-float)))
+)
 
 (defun c-red   (c) (aref c 0))
 (defun c-green (c) (aref c 1))
@@ -41,15 +43,18 @@
 (defun c-jitter (c c-delta)
   (c+ c (map 'array #'(lambda (a) (rand1 a)) c-delta)))
 
+(eval-when (:compile-toplevel :load-toplevel :execute)
+
 (defun c-255! (r g b &optional (a 255))
   (c! (/ r 255.0) (/ g 255.0) (/ b 255.0) (/ a 255.0)))
 
-;; (defconstant +rainbow+
-;;   (vector (c-255! 255 0 0) (c-255! 255 127 0) (c-255! 255 255 0) (c-255! 0 255 0)
-;;           (c-255! 0 0 255) (c-255! 75 0 130) (c-255! 148 0 211)))
+  (defconstant +rainbow+
+    (vector (c-255! 255 0 0) (c-255! 255 127 0) (c-255! 255 255 0) (c-255! 0 255 0)
+            (c-255! 0 0 255) (c-255! 75 0 130) (c-255! 148 0 211)))
+  )
 
-;; (defun c-rainbow (f)
-;;   (let ((rainbow-value (* f 6.0)))
-;;     (multiple-value-bind (i frac)
-;;         (floor rainbow-value)
-;;       (c-lerp frac (aref +rainbow+ i) (aref +rainbow+ (min (1+ i) 6))))))
+(defun c-rainbow (f)
+  (let ((rainbow-value (* f 6.0)))
+    (multiple-value-bind (i frac)
+        (floor rainbow-value)
+      (c-lerp frac (aref +rainbow+ i) (aref +rainbow+ (min (1+ i) 6))))))
