@@ -34,6 +34,8 @@
   ;;XXX NOT being used
   )
 
+(defvar *draw-scene-count* 0)
+
 ;;; display the view
 (defmethod draw-scene-view ((view scene-view))
   (3d-setup-buffer)
@@ -46,7 +48,8 @@
     (draw-ground-plane 10.0 10))
   (when *display-axes?*
     (draw-world-axes 3.0))
-  (3d-flush-render))
+  (3d-flush-render)
+  (incf *draw-scene-count*))
 
 ;;; respond to first click in window
 (defmethod accepts-first-mouse ((self scene-view) event)
