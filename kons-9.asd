@@ -44,7 +44,7 @@
    (:file "plugins/dynamics-animator")
    (:file "plugins/procedural-curve-shape")
    (:file "plugins/manager-group")
-;; ;   (:file "plugins/particle")
+   (:file "plugins/particle")
 ;; ;   (:file "plugins/l-system")
 ;; ;   (:file "plugins/he-mesh")
 ;;    (:file "plugins/usd")
