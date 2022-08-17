@@ -121,7 +121,7 @@
   (gl:material :front-and-back :specular (vector (c-red spec) (c-green spec) (c-blue spec) 1.0))
   ;; (with-c-array-1 (vector shine)
   ;;   (gl:material :front-and-back :shininess vp))
-  (gl:material :front-and-back :shininess (vector shine)))
+  (gl:material :front-and-back :shininess shine))
   
 ;; (defun new-pixel-format (&rest attributes)
 ;;   ;; take a list of opengl pixel format attributes (enums and other
