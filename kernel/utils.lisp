@@ -39,8 +39,12 @@
 (defun array->list (array)
   (map 'list #'identity array))
 
+#+nil 
 (defun list->array (list)
   (map 'array #'identity list))
+
+(defun list->array (list)
+  (map 'vector #'identity list))
 
 (defun wrap-list (list)
   (append list (list (first list))))

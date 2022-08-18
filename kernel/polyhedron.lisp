@@ -55,8 +55,12 @@
 (defmethod face-center ((polyh polyhedron) face)
   (p-center (face-points polyh face)))
 
+#+nil
 (defmethod face-centers ((polyh polyhedron))
   (map 'array #'(lambda (f) (face-center polyh f)) (faces polyh)))
+
+(defmethod face-centers ((polyh polyhedron))
+  (map 'vector #'(lambda (f) (face-center polyh f)) (faces polyh)))
 
 (defun triangle-normal (p0 p1 p2)
   (p-normalize (p-cross (p-from-to p0 p1) (p-from-to p1 p2))))

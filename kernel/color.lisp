@@ -22,8 +22,12 @@
 (defun c-set-alpha (c alpha)
   (setf (aref c 3) alpha))
 
+#+nil
 (defun c-lerp (f c1 c2)
   (map 'array #'(lambda (a b) (lerp f a b)) c1 c2))
+
+(defun c-lerp (f c1 c2)
+  (map 'vector #'(lambda (a b) (lerp f a b)) c1 c2))
 
 (defun c-rand ()
   (c! (rand2 0.0 1.0) (rand2 0.0 1.0) (rand2 0.0 1.0)))
@@ -34,14 +38,26 @@
 (defun c-rand2 (c1 c2)
   (c-lerp (rand2 0 1) c1 c2))
 
+#+nil
 (defun c+ (c1 c2)
   (map 'array #'(lambda (a b) (+ a b)) c1 c2))
 
+(defun c+ (c1 c2)
+  (map 'vector #'(lambda (a b) (+ a b)) c1 c2))
+
+#+nil
 (defun c-scale (c1 x)
   (map 'array #'(lambda (a) (* a x)) c1))
 
+(defun c-scale (c1 x)
+  (map 'vector #'(lambda (a) (* a x)) c1))
+
+#+nil
 (defun c-jitter (c c-delta)
   (c+ c (map 'array #'(lambda (a) (rand1 a)) c-delta)))
+
+(defun c-jitter (c c-delta)
+  (c+ c (map 'vector #'(lambda (a) (rand1 a)) c-delta)))
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
 
