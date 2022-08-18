@@ -61,7 +61,7 @@
 
 ;;; accept key events
 (defmethod accepts-first-responder ((self scene-view))
-  t)
+   t)
 
 (defmethod mouse-dragged ((self scene-view) event)
   (format t "mouse-dragged NIY...")
@@ -120,10 +120,10 @@ h or ?: print this help message~%"))
 ;; to draw the window decorations themselves
 (defun update-window-title (window)
   (glfw:set-window-title (format nil "size ~A | keys ~A | buttons ~A"
-                                 *window-size*
-                                 *keys-pressed*
-                                 *buttons-pressed*)
-                         window))
+                            *window-size*
+                            *keys-pressed*
+                            *buttons-pressed*)
+                    window))
 
 (glfw:def-key-callback key-callback (window key scancode action mod-keys)
   (format t "key-callback: w: ~a, k: ~a, sc: ~a, a: ~a, mk: ~a ~%"
@@ -138,7 +138,7 @@ h or ?: print this help message~%"))
         (pushnew key *keys-pressed*)
         (when *default-scene-view*
           (key-down *default-scene-view* (string-downcase (string key)))))
-      (alexandria:deletef *keys-pressed* key))
+    (alexandria:deletef *keys-pressed* key))
   (update-window-title window))
 
 (glfw:def-mouse-button-callback mouse-callback (window button action mod-keys)
@@ -146,8 +146,8 @@ h or ?: print this help message~%"))
           window button action mod-keys)
   (finish-output)
   (if (eq action :press)
-      (pushnew button *buttons-pressed*)
-      (alexandria:deletef *buttons-pressed* button))
+    (pushnew button *buttons-pressed*)
+    (alexandria:deletef *buttons-pressed* button))
   (update-window-title window))
 
 (defun set-viewport (width height)
@@ -166,7 +166,6 @@ h or ?: print this help message~%"))
   (update-window-title window)
   (set-viewport w h))
 
-
 (defun show-window (scene)
   (setf *scene-views* '())
   ;; XXX TODO assert that this is running on the main thread.
@@ -174,33 +173,28 @@ h or ?: print this help message~%"))
   ;; Normally this is called by run function in kernel/main.lisp
 
   (handler-bind ((error
-                  (lambda (condition)
-                    (trivial-backtrace:print-backtrace condition)
-                    (return-from show-window))))
-    (sb-int:with-float-traps-masked
-        (:invalid
-         :inexact
-         :overflow
-         :underflow
-         :divide-by-zero)(glfw:with-init-window (:title "glfw3 foo"
-                                                 :width *window-x-size* :height *window-y-size*)
-         (let ((scene-view (make-instance 'scene-view :scene scene)))
-           (push scene-view *scene-views*)
-           ;; Hack! Need to figure out how to tie a scene-view to a window
-           ;; in glfw3. For now, just set the first scene-view created
-           ;; as default and use that for event handling
-           (setf *default-scene-view* scene-view)
+                   (lambda (condition)
+                     (trivial-backtrace:print-backtrace condition)
+                     (return-from show-window))))
+      (glfw:with-init-window (:title "glfw3 foo"
+                              :width *window-x-size* :height *window-y-size*)
+        (let ((scene-view (make-instance 'scene-view :scene scene)))
+          (push scene-view *scene-views*)
+          ;; Hack! Need to figure out how to tie a scene-view to a window
+          ;; in glfw3. For now, just set the first scene-view created
+          ;; as default and use that for event handling
+          (setf *default-scene-view* scene-view)
 
-           (setf %gl:*gl-get-proc-address* #'glfw:get-proc-address)
-           (glfw:set-key-callback 'key-callback)
-           (glfw:set-mouse-button-callback 'mouse-callback)
-           (glfw:set-window-size-callback 'window-size-callback)
-           (setf *window-size* (glfw:get-window-size))
-           (update-window-title glfw:*window*)
-           (loop until (glfw:window-should-close-p)
-                 do (draw-scene-view *default-scene-view*)
-                 do (glfw:swap-buffers)
-                 do (glfw:poll-events)))))))
+          (setf %gl:*gl-get-proc-address* #'glfw:get-proc-address)
+          (glfw:set-key-callback 'key-callback)
+          (glfw:set-mouse-button-callback 'mouse-callback)
+          (glfw:set-window-size-callback 'window-size-callback)
+          (setf *window-size* (glfw:get-window-size))
+          (update-window-title glfw:*window*)
+          (loop until (glfw:window-should-close-p)
+                do (draw-scene-view *default-scene-view*)
+                do (glfw:swap-buffers)
+                do (glfw:poll-events))))))
 
 (defmacro with-redraw (&body body)
   `(let ((result (progn ,@body)))
@@ -224,4 +218,3 @@ h or ?: print this help message~%"))
      (let ((_result (progn ,@body)))
        (redraw)
        _result)))
-

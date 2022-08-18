@@ -276,7 +276,9 @@
     (dotimes (f (length (faces polyh)))
       (dolist (tri (face-triangle-refs (aref (faces polyh) f)))
         (push tri tri-faces)))
-    (make-polyhedron (points polyh) (coerce tri-faces 'array))))
+    ;; SBCL says we can't coerce a list to an array
+    ;; (make-polyhedron (points polyh) (coerce tri-faces 'array))
+    (make-polyhedron (points polyh) (coerce tri-faces 'vector))))
 
 (defmethod is-triangulated-polyhedron? ((polyh polyhedron))
   (dotimes (f (length (faces polyh)))

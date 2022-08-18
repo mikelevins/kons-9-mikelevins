@@ -43,10 +43,18 @@
   (declare (ignore env))
   (make-load-form-saving-slots p))
 
+#| work around defconstant issues on sbcl
 (defconstant +origin+ (p! 0 0 0))
 (defconstant +x-axis+ (p! 1 0 0))
 (defconstant +y-axis+ (p! 0 1 0))
 (defconstant +z-axis+ (p! 0 0 1))
+|#
+
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defparameter +origin+ (p! 0 0 0))
+  (defparameter +x-axis+ (p! 1 0 0))
+  (defparameter +y-axis+ (p! 0 1 0))
+  (defparameter +z-axis+ (p! 0 0 1)))
 
 (defmethod p-set! ((self point) x y z)
   (setf (x self) x)
